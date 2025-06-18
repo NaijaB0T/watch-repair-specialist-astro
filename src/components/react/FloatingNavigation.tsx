@@ -17,7 +17,7 @@ const FloatingNavigation: React.FC = () => {
 
   const actions = [
     { icon: <HomeIcon />, name: 'Home', href: '/' },
-    { icon: <ListIcon />, name: 'Browse All', href: '/browse' },
+    { icon: <ListIcon />, name: 'Browse All', href: '/browse/1' },
     { icon: <InfoIcon />, name: 'About', href: '/about' },
   ];
 

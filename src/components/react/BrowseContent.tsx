@@ -36,9 +36,19 @@ interface Specialist {
 
 interface BrowseContentProps {
   specialistsByState: Record<string, Specialist[]>;
+  currentPage?: number;
+  totalPages?: number;
+  prevUrl?: string | null;
+  nextUrl?: string | null;
 }
 
-const BrowseContent: React.FC<BrowseContentProps> = ({ specialistsByState }) => {
+const BrowseContent: React.FC<BrowseContentProps> = ({ 
+  specialistsByState, 
+  currentPage = 1, 
+  totalPages = 1, 
+  prevUrl, 
+  nextUrl 
+}) => {
   const createSlug = (name: string) => {
     return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   };
@@ -142,6 +152,45 @@ const BrowseContent: React.FC<BrowseContentProps> = ({ specialistsByState }) => 
             </Grid>
           </Box>
         ))}
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <Box sx={{ mt: 6, mb: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
+            {prevUrl && (
+              <Button 
+                variant="contained" 
+                href={prevUrl}
+                sx={{ 
+                  backgroundColor: '#C9A96E',
+                  '&:hover': {
+                    backgroundColor: '#E6C78A',
+                  }
+                }}
+              >
+                Previous
+              </Button>
+            )}
+            
+            <Typography variant="body1" sx={{ mx: 2 }}>
+              Page {currentPage} of {totalPages}
+            </Typography>
+            
+            {nextUrl && (
+              <Button 
+                variant="contained" 
+                href={nextUrl}
+                sx={{ 
+                  backgroundColor: '#C9A96E',
+                  '&:hover': {
+                    backgroundColor: '#E6C78A',
+                  }
+                }}
+              >
+                Next
+              </Button>
+            )}
+          </Box>
+        )}
     </Container>
   );
 };
