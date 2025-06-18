@@ -9,7 +9,7 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   site: "https://chrono-finder.com",
-  integrations: [mdx(), sitemap(), react()],
+  integrations: [mdx(), sitemap(), react({ runtime: 'react-server' })],
   adapter: cloudflare({
     platformProxy: {
       enabled: true,
