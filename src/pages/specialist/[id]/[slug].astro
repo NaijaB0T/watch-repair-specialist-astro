@@ -1,5 +1,5 @@
 ---
-import SpecialistContent from '../../../components/react/SpecialistContent';
+import SpecialistContent from '../../../components/SpecialistContent.astro';
 import specialistsData from '../../../data/specialists.json';
 import '../../../styles/global.css';
 import type { Specialist } from '../../../types';
@@ -68,52 +68,47 @@ if (!specialist) {
     <title>{specialist.name} | Master Watch Repair Specialist{specialist.address?.city ? ` in ${specialist.address.city}` : ''}{specialist.address?.state ? `, ${specialist.address.state}` : ''}</title>
     <meta name="description" content={`Expert watch repair services by ${specialist.name}${specialist.address?.city ? ` in ${specialist.address.city}` : ''}${specialist.address?.state ? `, ${specialist.address.state}` : ''}. ${specialist.rating ? `Rated ${specialist.rating} stars` : ''}${specialist.review_count ? ` with ${specialist.review_count} reviews` : ''}. Professional horologist and timepiece restoration specialist.`} />
     
-    {/* Fonts */}
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    {/* SEO */}
-    <meta name="keywords" content={`${specialist.name}, watch repair ${specialist.address.city}, horologist ${specialist.address.state}, timepiece restoration, luxury watch service, mechanical watch repair`} />
+    <!-- SEO and Social -->
+    <meta name="keywords" content={`${specialist.name}, watch repair ${specialist.address?.city || ''}, horologist ${specialist.address?.state || ''}, timepiece restoration, luxury watch service`} />
     <meta property="og:title" content={`${specialist.name} | Master Watch Repair Specialist`} />
-    <meta property="og:description" content={`Expert watch repair services in ${specialist.address.city}, ${specialist.address.state}. Rated ${specialist.rating} stars.`} />
+    <meta property="og:description" content={`Expert watch repair services by ${specialist.name}. Professional horologist and timepiece restoration specialist.`} />
     <meta property="og:type" content="business.business" />
-    <meta property="og:image" content={specialist.image_url} />
     
-    {/* Structured Data */}
-    <script type="application/ld+json" set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": specialist.name,
-      "description": `Expert watch repair services in ${specialist.address.city}, ${specialist.address.state}`,
-      "url": specialist.website,
-      "telephone": specialist.phone,
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": specialist.address.street_address,
-        "addressLocality": specialist.address.city,
-        "addressRegion": specialist.address.state,
-        "postalCode": specialist.address.postal_code,
-        "addressCountry": specialist.address.country
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": specialist.rating,
-        "reviewCount": specialist.review_count
-      },
-      "priceRange": "$$-$$$",
-      "serviceArea": {
-        "@type": "GeoCircle",
-        "geoMidpoint": {
-          "@type": "GeoCoordinates",
-          "latitude": "0",
-          "longitude": "0"
-        },
-        "geoRadius": "50"
-      }
-    })} />
+    {specialist.image_url && (
+      <meta property="og:image" content={specialist.image_url} />
+    )}
+    
+    {/* Local Business Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": specialist.name,
+        "image": specialist.image_url,
+        "telephone": specialist.phone,
+        "url": specialist.website !== 'None' ? specialist.website : undefined,
+        "address": specialist.address ? {
+          "@type": "PostalAddress",
+          "streetAddress": specialist.address.street_address,
+          "addressLocality": specialist.address.city,
+          "addressRegion": specialist.address.state,
+          "postalCode": specialist.address.postal_code,
+          "addressCountry": specialist.address.country
+        } : undefined,
+        "aggregateRating": specialist.rating ? {
+          "@type": "AggregateRating",
+          "ratingValue": specialist.rating,
+          "reviewCount": specialist.review_count
+        } : undefined
+      })}
+    </script>
   </head>
   <body>
-    <SpecialistContent specialist={specialist} client:only="react" />
+    <SpecialistContent specialist={specialist} />
   </body>
 </html>

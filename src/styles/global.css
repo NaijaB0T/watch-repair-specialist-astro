@@ -1,150 +1,50 @@
-/* Global Styles for Chrono-Finder */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Body styling */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', sans-serif;
-  background-color: #1A1A1A;
-  color: #E8E8E8;
-  overflow-x: hidden;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1A1A1A;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #C9A96E;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #E6C78A;
-}
-
-/* Selection styling */
-::selection {
-  background: rgba(201, 169, 110, 0.3);
-  color: #E8E8E8;
-}
-
-::-moz-selection {
-  background: rgba(201, 169, 110, 0.3);
-  color: #E8E8E8;
-}
-
-/* Focus styles for accessibility */
-*:focus-visible {
-  outline: 2px solid #C9A96E;
-  outline-offset: 2px;
-}
-
-/* Link styles */
-a {
-  color: #C9A96E;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-a:hover {
-  color: #E6C78A;
-}
-
-/* Improved text rendering */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Animation classes for custom effects */
-.fade-in {
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+@layer base {
+  html {
+    @apply scroll-smooth;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  body {
+    @apply bg-dark text-gray-100 font-body;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold;
   }
 }
 
-.slide-in-left {
-  animation: slideInLeft 0.6s ease-out;
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-light text-dark font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  
+  .btn-secondary {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-dark font-semibold py-3 px-6 rounded-lg transition-all duration-300;
   }
-}
-
-.slide-in-right {
-  animation: slideInRight 0.6s ease-out;
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
+  
+  .card {
+    @apply bg-dark-light border border-gray-800 rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/50;
   }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary via-primary-light to-primary bg-clip-text text-transparent;
   }
 }
 
-/* Responsive design utilities */
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none !important;
+@layer utilities {
+  .glass-effect {
+    @apply backdrop-blur-lg bg-dark/80 border border-gray-800/50;
   }
-}
-
-@media (min-width: 769px) {
-  .mobile-only {
-    display: none !important;
+  
+  .animate-gear {
+    animation: spin 20s linear infinite;
   }
-}
-
-/* Loading animation */
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(201, 169, 110, 0.3);
-  border-left-color: #C9A96E;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
-}
-
-/* Glass morphism effect */
-.glass-effect {
-  background: rgba(44, 44, 44, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(201, 169, 110, 0.2);
 }

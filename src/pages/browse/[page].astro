@@ -1,55 +1,57 @@
 ---
 export const prerender = true;
 
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-import AnimatedBackground from '../../components/react/AnimatedBackground';
-import BrowseContent from '../../components/react/BrowseContent';
-import FloatingNavigation from '../../components/react/FloatingNavigation';
-import watchmakerTheme from '../../theme/watchmakerTheme';
+import AnimatedBackground from '../../components/AnimatedBackground.astro';
+import BrowseContent from '../../components/BrowseContent.astro';
+import FloatingNavigation from '../../components/FloatingNavigation.astro';
 import specialistsData from '../../data/specialists.json';
 import '../../styles/global.css';
 
 export async function getStaticPaths({ paginate }) {
-  const specialists = Object.values(specialistsData).filter(specialist => 
-    specialist && specialist.address && specialist.address.state
-  );
+  const specialists = Object.values(specialistsData);
   
-  // Sort specialists by state then by name for consistent pagination
-  specialists.sort((a, b) => {
-    const stateA = a.address?.state?.toLowerCase() || '';
-    const stateB = b.address?.state?.toLowerCase() || '';
-    if (stateA < stateB) return -1;
-    if (stateA > stateB) return 1;
+  // Group specialists by state
+  const specialistsByState = specialists.reduce((acc, specialist) => {
+    // Skip specialists without address or state
+    if (!specialist || !specialist.address || !specialist.address.state) {
+      return acc;
+    }
     
-    const nameA = a.name?.toLowerCase() || '';
-    const nameB = b.name?.toLowerCase() || '';
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
-  });
+    const state = specialist.address.state;
+    if (!acc[state]) {
+      acc[state] = [];
+    }
+    acc[state].push(specialist);
+    return acc;
+  }, {});
   
-  // Paginate with 50 specialists per page
-  return paginate(specialists, {
-    pageSize: 50
+  // Convert to array format for pagination
+  const statesArray = Object.entries(specialistsByState).map(([state, specialists]) => ({
+    state,
+    specialists,
+    count: specialists.length
+  }));
+  
+  // Sort states alphabetically
+  statesArray.sort((a, b) => a.state.localeCompare(b.state));
+  
+  // Paginate with 10 states per page
+  return paginate(statesArray, {
+    pageSize: 10
   });
 }
 
 const { page } = Astro.props;
-const { data: specialists, currentPage, lastPage, url } = page;
+const { data: states, currentPage, lastPage, url } = page;
 
 // Create pagination URLs
 const baseUrl = '/browse';
 const prevUrl = currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/${currentPage - 1}`) : null;
 const nextUrl = currentPage < lastPage ? `${baseUrl}/${currentPage + 1}` : null;
 
-// Group specialists by state for BrowseContent component
-const specialistsByState = specialists.reduce((acc, specialist) => {
-  const state = specialist.address.state;
-  if (!acc[state]) {
-    acc[state] = [];
-  }
-  acc[state].push(specialist);
+// Convert back to object format for BrowseContent component
+const specialistsByState = states.reduce((acc, { state, specialists }) => {
+  acc[state] = specialists;
   return acc;
 }, {});
 ---
@@ -68,32 +70,23 @@ const specialistsByState = specialists.reduce((acc, specialist) => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- SEO -->
-    <meta name="keywords" content="watch repair directory, browse horologists, watchmaker listings, state watch repair, local timepiece restoration" />
-    <meta property="og:title" content={`Browse Watch Repair Specialists - Page ${currentPage} | Chrono-Finder Directory`} />
-    <meta property="og:description" content={`Browse our directory of master watch repair specialists and certified horologists. Page ${currentPage} of ${lastPage}.`} />
-    <meta property="og:type" content="website" />
-    
     <!-- Pagination links for SEO -->
     {prevUrl && <link rel="prev" href={prevUrl} />}
     {nextUrl && <link rel="next" href={nextUrl} />}
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme} client:only="react">
-      <CssBaseline />
-      
-      <div style="min-height: 100vh; position: relative;">
-        <AnimatedBackground client:only="react" />
-        <BrowseContent 
-          specialistsByState={specialistsByState}
-          currentPage={currentPage}
-          totalPages={lastPage}
-          prevUrl={prevUrl}
-          nextUrl={nextUrl}
-          client:only="react" 
-        />
-        <FloatingNavigation client:only="react" />
-      </div>
-    </ThemeProvider>
+    <AnimatedBackground />
+    
+    <main class="relative z-10 min-h-screen">
+      <BrowseContent 
+        specialistsByState={specialistsByState}
+        currentPage={currentPage}
+        totalPages={lastPage}
+        prevUrl={prevUrl}
+        nextUrl={nextUrl}
+      />
+    </main>
+    
+    <FloatingNavigation />
   </body>
 </html>

@@ -16,31 +16,26 @@
   "dependencies": {
     "@astrojs/cloudflare": "12.5.0",
     "@astrojs/mdx": "4.2.4",
-    "@astrojs/react": "^4.3.0",
     "@astrojs/rss": "4.0.11",
     "@astrojs/sitemap": "3.3.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^7.1.1",
-    "@mui/material": "^7.1.1",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@astrojs/tailwind": "^5.1.0",
     "astro": "5.7.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "tailwindcss": "^3.4.1",
     "typescript": "5.8.3"
   },
   "devDependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "wrangler": "4.16.1"
   },
   "scripts": {
     "astro": "astro",
-    "build": "astro build && node scripts/patch-worker.js",
+    "build": "astro build",
     "cf-typegen": "wrangler types",
-    "check": "astro build && node scripts/patch-worker.js && tsc && wrangler deploy --dry-run",
+    "check": "astro build && tsc && wrangler deploy --dry-run",
     "deploy": "wrangler deploy",
     "dev": "astro dev",
-    "preview": "astro build && node scripts/patch-worker.js && wrangler dev"
+    "preview": "astro build && wrangler dev"
   },
   "type": "module"
 }

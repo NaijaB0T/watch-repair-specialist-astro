@@ -1,10 +1,8 @@
 ---
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
-import AnimatedBackground from '../components/react/AnimatedBackground';
-import AboutContent from '../components/react/AboutContent';
-import FloatingNavigation from '../components/react/FloatingNavigation';
-import watchmakerTheme from '../theme/watchmakerTheme';
+export const prerender = true;
+
+import AnimatedBackground from '../components/AnimatedBackground.astro';
+import FloatingNavigation from '../components/FloatingNavigation.astro';
 import '../styles/global.css';
 ---
 
@@ -21,22 +19,95 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- SEO -->
-    <meta name="keywords" content="about chrono-finder, watch repair directory, horologist network, timepiece restoration experts" />
-    <meta property="og:title" content="About Chrono-Finder | Premier Watch Repair Specialist Directory" />
-    <meta property="og:description" content="Learn about Chrono-Finder, the premier directory for finding master watch repair specialists and certified horologists." />
-    <meta property="og:type" content="website" />
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme} client:only="react">
-      <CssBaseline />
-      
-      <div style="min-height: 100vh; position: relative;">
-        <AnimatedBackground client:only="react" />
-        <AboutContent client:only="react" />
-        <FloatingNavigation client:only="react" />
+    <AnimatedBackground />
+    
+    <main class="relative z-10 min-h-screen">
+      <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-8 text-sm">
+          <ol class="flex items-center space-x-2">
+            <li>
+              <a href="/" class="text-primary hover:text-primary-light transition-colors">Home</a>
+            </li>
+            <li class="text-gray-500">/</li>
+            <li class="text-gray-300">About</li>
+          </ol>
+        </nav>
+        
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-4xl md:text-5xl font-display mb-8 gradient-text text-center">
+            About Chrono-Finder
+          </h1>
+          
+          <div class="card p-8 mb-8">
+            <h2 class="text-2xl font-display text-primary mb-4">Our Mission</h2>
+            <p class="text-gray-300 mb-6">
+              Chrono-Finder is dedicated to connecting watch enthusiasts with the finest horologists 
+              and watch repair specialists across the United States. We understand that your timepiece 
+              is more than just a tool—it's a piece of art, a family heirloom, or a symbol of achievement.
+            </p>
+            <p class="text-gray-300">
+              Our comprehensive directory ensures that whether you own a vintage pocket watch or the 
+              latest luxury chronograph, you can find a qualified specialist who will treat your 
+              timepiece with the care and expertise it deserves.
+            </p>
+          </div>
+          
+          <div class="card p-8 mb-8">
+            <h2 class="text-2xl font-display text-primary mb-4">What We Offer</h2>
+            <ul class="space-y-3 text-gray-300">
+              <li class="flex items-start">
+                <svg class="w-6 h-6 text-primary mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Comprehensive directory of certified watch repair specialists</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-6 h-6 text-primary mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Verified ratings and reviews from real customers</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-6 h-6 text-primary mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Easy-to-use search and browse functionality</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-6 h-6 text-primary mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Direct contact information for each specialist</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="card p-8">
+            <h2 class="text-2xl font-display text-primary mb-4">Quality Standards</h2>
+            <p class="text-gray-300 mb-6">
+              Every specialist in our directory has been vetted to ensure they meet our high standards 
+              for craftsmanship, customer service, and expertise. We regularly update our listings to 
+              maintain accuracy and reliability.
+            </p>
+            <p class="text-gray-300">
+              Whether you need a simple battery replacement or a complete restoration of a vintage 
+              timepiece, you can trust that the specialists found through Chrono-Finder will deliver 
+              exceptional service.
+            </p>
+          </div>
+          
+          <div class="text-center mt-12">
+            <a href="/browse/1" class="btn-primary">
+              Browse All Specialists
+            </a>
+          </div>
+        </div>
       </div>
-    </ThemeProvider>
+    </main>
+    
+    <FloatingNavigation />
   </body>
 </html>

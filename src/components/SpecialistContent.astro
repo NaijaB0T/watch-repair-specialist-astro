@@ -1,0 +1,180 @@
+---
+import AnimatedBackground from './AnimatedBackground.astro';
+import FloatingNavigation from './FloatingNavigation.astro';
+import specialistsData from '../data/specialists.json';
+
+export interface Props {
+  specialist: any;
+}
+
+const { specialist } = Astro.props;
+
+function createSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+// Get nearby specialists
+const nearbySpecialists = (specialist.nearby_specialists_ids || [])
+  .map((id: string) => specialistsData[id])
+  .filter((nearby) => {
+    return nearby && 
+           nearby.address && 
+           nearby.address.city && 
+           nearby.address.state &&
+           nearby.name;
+  })
+  .slice(0, 3);
+---
+
+<div class="min-h-screen relative">
+  <AnimatedBackground />
+  
+  <main class="relative z-10">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Breadcrumb -->
+      <nav class="mb-8 text-sm">
+        <ol class="flex items-center space-x-2">
+          <li>
+            <a href="/" class="text-primary hover:text-primary-light transition-colors">Home</a>
+          </li>
+          <li class="text-gray-500">/</li>
+          <li>
+            <a href="/browse/1" class="text-primary hover:text-primary-light transition-colors">Browse</a>
+          </li>
+          <li class="text-gray-500">/</li>
+          <li class="text-gray-300">{specialist.name}</li>
+        </ol>
+      </nav>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - Main Info -->
+        <div class="lg:col-span-2">
+          <div class="card p-8">
+            {specialist.image_url && (
+              <img 
+                src={specialist.image_url} 
+                alt={`${specialist.name} watch repair shop`}
+                class="w-full h-64 object-cover rounded-lg mb-6"
+              />
+            )}
+            
+            <h1 class="text-3xl md:text-4xl font-display text-primary mb-4">
+              {specialist.name}
+            </h1>
+            
+            {specialist.rating && (
+              <div class="flex items-center mb-6">
+                <div class="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => (
+                    <svg 
+                      class={`w-6 h-6 ${i < Math.floor(specialist.rating) ? 'fill-current' : 'stroke-current fill-none'}`}
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  ))}
+                </div>
+                <span class="ml-3 text-xl text-gray-300">
+                  {specialist.rating} ({specialist.review_count} reviews)
+                </span>
+              </div>
+            )}
+            
+            <div class="space-y-4 mb-8">
+              {specialist.address && (
+                <div>
+                  <h2 class="text-xl font-display text-primary mb-2 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Address
+                  </h2>
+                  <p class="text-gray-300">
+                    {specialist.address?.street_address}<br />
+                    {specialist.address?.city}, {specialist.address?.state} {specialist.address?.postal_code}
+                  </p>
+                </div>
+              )}
+              
+              <div class="flex flex-col sm:flex-row gap-4">
+                {specialist.phone && (
+                  <a href={`tel:${specialist.phone}`} class="btn-primary flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                    </svg>
+                    Call {specialist.phone}
+                  </a>
+                )}
+                
+                {specialist.website && specialist.website !== 'None' && (
+                  <a href={specialist.website} target="_blank" rel="noopener noreferrer" class="btn-secondary flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                    </svg>
+                    Visit Website
+                  </a>
+                )}
+                
+                {specialist.google_maps_url && (
+                  <a href={specialist.google_maps_url} target="_blank" rel="noopener noreferrer" class="btn-secondary flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                    </svg>
+                    View on Maps
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column - Nearby Specialists -->
+        <div class="lg:col-span-1">
+          {nearbySpecialists.length > 0 && (
+            <div class="card p-6 sticky top-6">
+              <h2 class="text-2xl font-display text-primary mb-6">
+                Other Master Watchmakers Nearby
+              </h2>
+              
+              <div class="space-y-4">
+                {nearbySpecialists.map((nearby) => (
+                  <a 
+                    href={`/specialist/${nearby.unique_id}/${createSlug(nearby.name)}`}
+                    class="block p-4 bg-dark rounded-lg hover:bg-dark-lighter transition-colors duration-300"
+                  >
+                    <h3 class="text-lg font-display text-primary mb-1">
+                      {nearby.name}
+                    </h3>
+                    <p class="text-sm text-gray-400 mb-2">
+                      {nearby.address?.city}, {nearby.address?.state}
+                    </p>
+                    {nearby.rating && (
+                      <div class="flex items-center text-sm">
+                        <div class="flex text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <svg 
+                              class={`w-4 h-4 ${i < Math.floor(nearby.rating) ? 'fill-current' : 'stroke-current fill-none'}`}
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                          ))}
+                        </div>
+                        <span class="ml-2 text-gray-400">
+                          {nearby.rating} ({nearby.review_count})
+                        </span>
+                      </div>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <FloatingNavigation />
+</div>

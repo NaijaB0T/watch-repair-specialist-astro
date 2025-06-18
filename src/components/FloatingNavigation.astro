@@ -1,0 +1,96 @@
+---
+// FloatingNavigation.astro
+---
+
+<div class="floating-nav fixed bottom-8 right-8 z-50">
+  <button 
+    id="nav-toggle" 
+    class="nav-toggle w-16 h-16 bg-gradient-to-br from-primary to-primary-dark rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 flex items-center justify-center group"
+    aria-label="Toggle navigation menu"
+  >
+    <svg class="w-6 h-6 text-dark group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+    </svg>
+  </button>
+  
+  <nav id="nav-menu" class="nav-menu absolute bottom-20 right-0 transform scale-0 origin-bottom-right transition-transform duration-300">
+    <a href="/" class="nav-item flex items-center gap-3 px-6 py-3 mb-2 bg-dark-light rounded-lg hover:bg-primary hover:text-dark transition-all duration-300 group">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+      </svg>
+      <span class="whitespace-nowrap">Home</span>
+    </a>
+    
+    <a href="/browse/1" class="nav-item flex items-center gap-3 px-6 py-3 mb-2 bg-dark-light rounded-lg hover:bg-primary hover:text-dark transition-all duration-300 group">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+      </svg>
+      <span class="whitespace-nowrap">Browse All</span>
+    </a>
+    
+    <a href="/about" class="nav-item flex items-center gap-3 px-6 py-3 bg-dark-light rounded-lg hover:bg-primary hover:text-dark transition-all duration-300 group">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span class="whitespace-nowrap">About</span>
+    </a>
+  </nav>
+</div>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('nav-menu');
+  let isOpen = false;
+  
+  toggle?.addEventListener('click', () => {
+    isOpen = !isOpen;
+    if (isOpen) {
+      menu?.classList.remove('scale-0');
+      menu?.classList.add('scale-100');
+      toggle.classList.add('rotate-180');
+    } else {
+      menu?.classList.remove('scale-100');
+      menu?.classList.add('scale-0');
+      toggle.classList.remove('rotate-180');
+    }
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const nav = document.querySelector('.floating-nav');
+    if (nav && !nav.contains(e.target as Node) && isOpen) {
+      isOpen = false;
+      menu?.classList.remove('scale-100');
+      menu?.classList.add('scale-0');
+      toggle?.classList.remove('rotate-180');
+    }
+  });
+</script>
+
+<style>
+  .nav-toggle {
+    transform-origin: center;
+  }
+  
+  .nav-item {
+    transform: translateX(100%);
+    opacity: 0;
+    animation: slideIn 0.3s ease-out forwards;
+  }
+  
+  .nav-item:nth-child(1) { animation-delay: 0.1s; }
+  .nav-item:nth-child(2) { animation-delay: 0.2s; }
+  .nav-item:nth-child(3) { animation-delay: 0.3s; }
+  
+  .nav-menu.scale-100 .nav-item {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  
+  @keyframes slideIn {
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+</style>
