@@ -11,50 +11,45 @@ import specialistsData from '../../data/specialists.json';
 import '../../styles/global.css';
 
 export async function getStaticPaths({ paginate }) {
-  const specialists = Object.values(specialistsData);
+  const specialists = Object.values(specialistsData).filter(specialist => 
+    specialist && specialist.address && specialist.address.state
+  );
   
-  // Group specialists by state
-  const specialistsByState = specialists.reduce((acc, specialist) => {
-    // Skip specialists without address or state
-    if (!specialist || !specialist.address || !specialist.address.state) {
-      return acc;
-    }
+  // Sort specialists by state then by name for consistent pagination
+  specialists.sort((a, b) => {
+    const stateA = a.address?.state?.toLowerCase() || '';
+    const stateB = b.address?.state?.toLowerCase() || '';
+    if (stateA < stateB) return -1;
+    if (stateA > stateB) return 1;
     
-    const state = specialist.address.state;
-    if (!acc[state]) {
-      acc[state] = [];
-    }
-    acc[state].push(specialist);
-    return acc;
-  }, {});
+    const nameA = a.name?.toLowerCase() || '';
+    const nameB = b.name?.toLowerCase() || '';
+    if (nameA < nameB) return -1;
+    if (nameA > nameB) return 1;
+    return 0;
+  });
   
-  // Convert to array format for pagination
-  const statesArray = Object.entries(specialistsByState).map(([state, specialists]) => ({
-    state,
-    specialists,
-    count: specialists.length
-  }));
-  
-  // Sort states alphabetically
-  statesArray.sort((a, b) => a.state.localeCompare(b.state));
-  
-  // Paginate with 10 states per page
-  return paginate(statesArray, {
-    pageSize: 10
+  // Paginate with 50 specialists per page
+  return paginate(specialists, {
+    pageSize: 50
   });
 }
 
 const { page } = Astro.props;
-const { data: states, currentPage, lastPage, url } = page;
+const { data: specialists, currentPage, lastPage, url } = page;
 
 // Create pagination URLs
 const baseUrl = '/browse';
 const prevUrl = currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/${currentPage - 1}`) : null;
 const nextUrl = currentPage < lastPage ? `${baseUrl}/${currentPage + 1}` : null;
 
-// Convert back to object format for BrowseContent component
-const specialistsByState = states.reduce((acc, { state, specialists }) => {
-  acc[state] = specialists;
+// Group specialists by state for BrowseContent component
+const specialistsByState = specialists.reduce((acc, specialist) => {
+  const state = specialist.address.state;
+  if (!acc[state]) {
+    acc[state] = [];
+  }
+  acc[state].push(specialist);
   return acc;
 }, {});
 ---
@@ -84,7 +79,7 @@ const specialistsByState = states.reduce((acc, { state, specialists }) => {
     {nextUrl && <link rel="next" href={nextUrl} />}
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme} client:load>
+    <ThemeProvider theme={watchmakerTheme}>
       <CssBaseline />
       
       <div style="min-height: 100vh; position: relative;">
