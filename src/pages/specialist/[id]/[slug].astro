@@ -1,0 +1,93 @@
+---
+import SpecialistContent from '../../../components/react/SpecialistContent';
+import specialistsData from '../../../data/specialists.json';
+import '../../../styles/global.css';
+import type { Specialist } from '../../../types';
+
+export async function getStaticPaths() {
+  const specialists = specialistsData as Record<string, Specialist>;
+  
+  return Object.values(specialists)
+    .filter((specialist: Specialist) => {
+      // Filter out specialists with null data or addresses
+      return specialist && specialist.name && specialist.address && specialist.address.city && specialist.address.state;
+    })
+    .map((specialist: Specialist) => {
+      const slug = specialist.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      return {
+        params: { 
+          id: specialist.unique_id,
+          slug: slug 
+        },
+        props: { specialist }
+      };
+    });
+}
+
+const { specialist } = Astro.props;
+const { id } = Astro.params;
+
+// Safety check for specialist data
+if (!specialist) {
+  throw new Error(`Specialist not found for id: ${id}`);
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{specialist.name} | Master Watch Repair Specialist{specialist.address?.city ? ` in ${specialist.address.city}` : ''}{specialist.address?.state ? `, ${specialist.address.state}` : ''}</title>
+    <meta name="description" content={`Expert watch repair services by ${specialist.name}${specialist.address?.city ? ` in ${specialist.address.city}` : ''}${specialist.address?.state ? `, ${specialist.address.state}` : ''}. ${specialist.rating ? `Rated ${specialist.rating} stars` : ''}${specialist.review_count ? ` with ${specialist.review_count} reviews` : ''}. Professional horologist and timepiece restoration specialist.`} />
+    
+    {/* Fonts */}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    {/* SEO */}
+    <meta name="keywords" content={`${specialist.name}, watch repair ${specialist.address.city}, horologist ${specialist.address.state}, timepiece restoration, luxury watch service, mechanical watch repair`} />
+    <meta property="og:title" content={`${specialist.name} | Master Watch Repair Specialist`} />
+    <meta property="og:description" content={`Expert watch repair services in ${specialist.address.city}, ${specialist.address.state}. Rated ${specialist.rating} stars.`} />
+    <meta property="og:type" content="business.business" />
+    <meta property="og:image" content={specialist.image_url} />
+    
+    {/* Structured Data */}
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": specialist.name,
+      "description": `Expert watch repair services in ${specialist.address.city}, ${specialist.address.state}`,
+      "url": specialist.website,
+      "telephone": specialist.phone,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": specialist.address.street_address,
+        "addressLocality": specialist.address.city,
+        "addressRegion": specialist.address.state,
+        "postalCode": specialist.address.postal_code,
+        "addressCountry": specialist.address.country
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": specialist.rating,
+        "reviewCount": specialist.review_count
+      },
+      "priceRange": "$$-$$$",
+      "serviceArea": {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": "0",
+          "longitude": "0"
+        },
+        "geoRadius": "50"
+      }
+    })} />
+  </head>
+  <body>
+    <SpecialistContent specialist={specialist} client:load />
+  </body>
+</html>
