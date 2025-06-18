@@ -1,0 +1,14 @@
+name = "watch-repair-specialist-astro"
+compatibility_date = "2024-06-18"
+compatibility_flags = ["nodejs_compat"]
+
+[site]
+bucket = "./dist"
+
+# Add MessageChannel polyfill support
+[vars]
+NODE_ENV = "production"
+
+# Deployment settings
+[env.production]
+name = "watch-repair-specialist-astro"
