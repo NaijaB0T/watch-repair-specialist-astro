@@ -7,21 +7,47 @@ import type { Specialist } from '../../../types';
 export async function getStaticPaths() {
   const specialists = specialistsData as Record<string, Specialist>;
   
-  return Object.values(specialists)
+  const validSpecialists = Object.values(specialists)
     .filter((specialist: Specialist) => {
       // Filter out specialists with null data or addresses
-      return specialist && specialist.name && specialist.address && specialist.address.city && specialist.address.state;
-    })
-    .map((specialist: Specialist) => {
-      const slug = specialist.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      return {
-        params: { 
+      const isValid = specialist && 
+             specialist.name && 
+             specialist.name.trim() !== '' &&
+             specialist.unique_id &&
+             specialist.address && 
+             specialist.address.city && 
+             specialist.address.state;
+      
+      if (!isValid && specialist) {
+        console.log('Skipping invalid specialist:', {
           id: specialist.unique_id,
-          slug: slug 
-        },
-        props: { specialist }
-      };
+          name: specialist.name,
+          hasAddress: !!specialist.address
+        });
+      }
+      
+      return isValid;
     });
+  
+  console.log(`Processing ${validSpecialists.length} valid specialists out of ${Object.keys(specialists).length} total`);
+  
+  return validSpecialists.map((specialist: Specialist) => {
+    const slug = specialist.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    
+    // If slug is empty after processing, use a fallback
+    const finalSlug = slug || 'specialist';
+    
+    return {
+      params: { 
+        id: specialist.unique_id,
+        slug: finalSlug 
+      },
+      props: { specialist }
+    };
+  });
 }
 
 const { specialist } = Astro.props;
