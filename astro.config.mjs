@@ -11,12 +11,7 @@ export default defineConfig({
   integrations: [
     mdx(), 
     sitemap(), 
-    react({ 
-      runtime: 'react-server',
-      // Custom render function to use react-dom/server/edge for Cloudflare Workers compatibility
-      // This helps avoid browser-specific APIs like MessageChannel during SSR
-      render: '@astrojs/react/server.js'
-    })
+    react()
   ],
   adapter: cloudflare({
     platformProxy: {

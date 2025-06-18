@@ -114,6 +114,6 @@ if (!specialist) {
     })} />
   </head>
   <body>
-    <SpecialistContent specialist={specialist} client:load />
+    <SpecialistContent specialist={specialist} client:only="react" />
   </body>
 </html>

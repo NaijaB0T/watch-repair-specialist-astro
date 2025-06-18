@@ -36,18 +36,18 @@ import '../styles/global.css';
     <meta name="twitter:description" content="Discover expert watch repair specialists across the United States. Find master horologists and certified watchmakers near you." />
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme}>
+    <ThemeProvider theme={watchmakerTheme} client:only="react">
       <CssBaseline />
       
       <div style="min-height: 100vh; position: relative; overflow: hidden;">
         {/* Animated Background */}
-        <AnimatedBackground client:load />
+        <AnimatedBackground client:only="react" />
         
         {/* Main Content */}
-        <HomeContent specialists={specialistsData} client:load />
+        <HomeContent specialists={specialistsData} client:only="react" />
         
         {/* Navigation */}
-        <FloatingNavigation client:load />
+        <FloatingNavigation client:only="react" />
       </div>
     </ThemeProvider>
   </body>

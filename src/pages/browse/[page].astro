@@ -79,20 +79,20 @@ const specialistsByState = specialists.reduce((acc, specialist) => {
     {nextUrl && <link rel="next" href={nextUrl} />}
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme}>
+    <ThemeProvider theme={watchmakerTheme} client:only="react">
       <CssBaseline />
       
       <div style="min-height: 100vh; position: relative;">
-        <AnimatedBackground client:load />
+        <AnimatedBackground client:only="react" />
         <BrowseContent 
           specialistsByState={specialistsByState}
           currentPage={currentPage}
           totalPages={lastPage}
           prevUrl={prevUrl}
           nextUrl={nextUrl}
-          client:load 
+          client:only="react" 
         />
-        <FloatingNavigation client:load />
+        <FloatingNavigation client:only="react" />
       </div>
     </ThemeProvider>
   </body>

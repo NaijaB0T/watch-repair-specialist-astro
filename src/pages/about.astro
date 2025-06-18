@@ -29,13 +29,13 @@ import '../styles/global.css';
     <meta property="og:type" content="website" />
   </head>
   <body>
-    <ThemeProvider theme={watchmakerTheme} client:load>
+    <ThemeProvider theme={watchmakerTheme} client:only="react">
       <CssBaseline />
       
       <div style="min-height: 100vh; position: relative;">
-        <AnimatedBackground client:load />
-        <AboutContent client:load />
-        <FloatingNavigation client:load />
+        <AnimatedBackground client:only="react" />
+        <AboutContent client:only="react" />
+        <FloatingNavigation client:only="react" />
       </div>
     </ThemeProvider>
   </body>
