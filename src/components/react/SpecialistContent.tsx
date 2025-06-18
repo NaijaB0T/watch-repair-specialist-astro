@@ -62,7 +62,14 @@ const SpecialistContent: React.FC<SpecialistContentProps> = ({ specialist }) => 
     .map((id: string) => {
       return (specialistsData as Record<string, Specialist>)[id];
     })
-    .filter(Boolean)
+    .filter((nearby) => {
+      // Filter out null specialists and those without valid addresses
+      return nearby && 
+             nearby.address && 
+             nearby.address.city && 
+             nearby.address.state &&
+             nearby.name;
+    })
     .slice(0, 3);
 
   return (
@@ -140,8 +147,8 @@ const SpecialistContent: React.FC<SpecialistContentProps> = ({ specialist }) => 
                         Address
                       </Typography>
                       <Typography variant="body1">
-                        {specialist.address.street_address}<br />
-                        {specialist.address.city}, {specialist.address.state} {specialist.address.postal_code}
+                        {specialist.address?.street_address}<br />
+                        {specialist.address?.city}, {specialist.address?.state} {specialist.address?.postal_code}
                       </Typography>
                     </Box>
 
@@ -156,43 +163,47 @@ const SpecialistContent: React.FC<SpecialistContentProps> = ({ specialist }) => 
                         Call {specialist.phone}
                       </Button>
                       
-                      <Button
-                        variant="outlined"
-                        href={specialist.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        startIcon={<LanguageIcon />}
-                        fullWidth
-                        sx={{
-                          borderColor: '#C9A96E',
-                          color: '#C9A96E',
-                          '&:hover': {
-                            borderColor: '#E6C78A',
-                            backgroundColor: 'rgba(201, 169, 110, 0.1)',
-                          },
-                        }}
-                      >
-                        Visit Website
-                      </Button>
+                      {specialist.website && specialist.website !== 'None' && (
+                        <Button
+                          variant="outlined"
+                          href={specialist.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          startIcon={<LanguageIcon />}
+                          fullWidth
+                          sx={{
+                            borderColor: '#C9A96E',
+                            color: '#C9A96E',
+                            '&:hover': {
+                              borderColor: '#E6C78A',
+                              backgroundColor: 'rgba(201, 169, 110, 0.1)',
+                            },
+                          }}
+                        >
+                          Visit Website
+                        </Button>
+                      )}
                       
-                      <Button
-                        variant="outlined"
-                        href={specialist.google_maps_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        startIcon={<LocationOnIcon />}
-                        fullWidth
-                        sx={{
-                          borderColor: '#95A5A6',
-                          color: '#95A5A6',
-                          '&:hover': {
-                            borderColor: '#BDC3C7',
-                            backgroundColor: 'rgba(149, 165, 166, 0.1)',
-                          },
-                        }}
-                      >
-                        View on Google Maps
-                      </Button>
+                      {specialist.google_maps_url && (
+                        <Button
+                          variant="outlined"
+                          href={specialist.google_maps_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          startIcon={<LocationOnIcon />}
+                          fullWidth
+                          sx={{
+                            borderColor: '#95A5A6',
+                            color: '#95A5A6',
+                            '&:hover': {
+                              borderColor: '#BDC3C7',
+                              backgroundColor: 'rgba(149, 165, 166, 0.1)',
+                            },
+                          }}
+                        >
+                          View on Google Maps
+                        </Button>
+                      )}
                     </Box>
                   </CardContent>
                 </Card>
@@ -284,7 +295,7 @@ const SpecialistContent: React.FC<SpecialistContentProps> = ({ specialist }) => 
                               {nearby.name}
                             </Typography>
                             <Typography variant="body2" sx={{ mb: 1 }}>
-                              {nearby.address.city}, {nearby.address.state}
+                              {nearby.address?.city}, {nearby.address?.state}
                             </Typography>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               <Rating
