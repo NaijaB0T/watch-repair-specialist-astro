@@ -6,12 +6,20 @@ import BrowseContent from '../../components/BrowseContent.astro';
 import FloatingNavigation from '../../components/FloatingNavigation.astro';
 import specialistsData from '../../data/specialists.json';
 import '../../styles/global.css';
+import type { Specialist } from '../../types';
+import type { GetStaticPathsOptions } from 'astro';
 
-export async function getStaticPaths({ paginate }) {
-  const specialists = Object.values(specialistsData);
+interface StatePageData {
+  state: string;
+  specialists: Specialist[];
+  count: number;
+}
+
+export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
+  const specialists = Object.values(specialistsData) as Specialist[];
   
   // Group specialists by state
-  const specialistsByState = specialists.reduce((acc, specialist) => {
+  const specialistsByState = specialists.reduce((acc: Record<string, Specialist[]>, specialist: Specialist) => {
     // Skip specialists without address or state
     if (!specialist || !specialist.address || !specialist.address.state) {
       return acc;
@@ -26,9 +34,9 @@ export async function getStaticPaths({ paginate }) {
   }, {});
   
   // Convert to array format for pagination
-  const statesArray = Object.entries(specialistsByState).map(([state, specialists]) => ({
+  const statesArray: StatePageData[] = Object.entries(specialistsByState).map(([state, specialists]) => ({
     state,
-    specialists,
+    specialists: specialists as Specialist[], // Cast specialists to Specialist[]
     count: specialists.length
   }));
   
@@ -41,19 +49,51 @@ export async function getStaticPaths({ paginate }) {
   });
 }
 
-const { page } = Astro.props;
-const { data: states, currentPage, lastPage, url } = page;
+interface AstroProps {
+  page: {
+    data: StatePageData[];
+    currentPage: number;
+    lastPage: number;
+    url: {
+      current: string;
+    };
+  };
+}
+
+const { page } = Astro.props as AstroProps;
+const { data: states, currentPage, lastPage } = page;
+
+const stateFilter = Astro.url.searchParams.get('state');
+
+console.log('stateFilter:', stateFilter);
+console.log('Initial states from page.data:', states.map(s => s.state));
+
+let filteredStates = states;
+if (stateFilter) {
+  filteredStates = states.filter(s => s.state === stateFilter);
+  console.log('Filtered states:', filteredStates.map(s => s.state));
+}
 
 // Create pagination URLs
 const baseUrl = '/browse';
-const prevUrl = currentPage > 1 ? (currentPage === 2 ? baseUrl : `${baseUrl}/${currentPage - 1}`) : null;
-const nextUrl = currentPage < lastPage ? `${baseUrl}/${currentPage + 1}` : null;
+const queryParam = stateFilter ? `?state=${encodeURIComponent(stateFilter)}` : '';
+
+const prevUrl = currentPage > 1 ? (currentPage === 2 ? `${baseUrl}${queryParam}` : `${baseUrl}/${currentPage - 1}${queryParam}`) : null;
+const nextUrl = currentPage < lastPage ? `${baseUrl}/${currentPage + 1}${queryParam}` : null;
 
 // Convert back to object format for BrowseContent component
-const specialistsByState = states.reduce((acc, { state, specialists }) => {
+const specialistsByState: Record<string, Specialist[]> = filteredStates.reduce((acc: Record<string, Specialist[]>, { state, specialists }) => {
   acc[state] = specialists;
   return acc;
 }, {});
+
+const pageTitle = stateFilter 
+  ? `Watch Repair Specialists in ${stateFilter} - Page ${currentPage} | Chrono-Finder Directory`
+  : `Browse Watch Repair Specialists - Page ${currentPage} | Chrono-Finder Directory`;
+
+const pageDescription = stateFilter
+  ? `Browse our directory of master watch repair specialists and certified horologists in ${stateFilter}. Page ${currentPage} of ${lastPage}. Find expert timepiece restoration services near you.`
+  : `Browse our directory of master watch repair specialists and certified horologists. Page ${currentPage} of ${lastPage}. Find expert timepiece restoration services near you.`;
 ---
 
 <html lang="en">
@@ -62,8 +102,8 @@ const specialistsByState = states.reduce((acc, { state, specialists }) => {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title>Browse Watch Repair Specialists - Page {currentPage} | Chrono-Finder Directory</title>
-    <meta name="description" content={`Browse our directory of master watch repair specialists and certified horologists. Page ${currentPage} of ${lastPage}. Find expert timepiece restoration services near you.`} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,6 +124,7 @@ const specialistsByState = states.reduce((acc, { state, specialists }) => {
         totalPages={lastPage}
         prevUrl={prevUrl}
         nextUrl={nextUrl}
+        stateFilter={stateFilter}
       />
     </main>
     

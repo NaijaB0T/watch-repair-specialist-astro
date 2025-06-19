@@ -1,0 +1,55 @@
+---
+export const prerender = true;
+
+import AnimatedBackground from '../../components/AnimatedBackground.astro';
+import FloatingNavigation from '../../components/FloatingNavigation.astro';
+import specialistsData from '../../data/specialists.json';
+import '../../styles/global.css';
+import type { Specialist } from '../../types';
+
+// Get all unique states from specialists data
+const allStates = Array.from(
+  new Set(
+    (Object.values(specialistsData) as Specialist[])
+      .filter(s => s && s.address && s.address.state)
+      .map(s => s.address!.state!)
+  )
+).sort();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>All States | Chrono-Finder Directory</title>
+    <meta name="description" content="Browse watch repair specialists by state across the United States." />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <AnimatedBackground />
+    
+    <main class="relative z-10 min-h-screen container mx-auto px-4 py-16">
+      <h1 class="text-4xl md:text-5xl font-display text-center mb-12 gradient-text">
+        Browse Specialists by State
+      </h1>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {allStates.map((state) => (
+          <a href={`/browse/1?state=${encodeURIComponent(state)}`} class="card p-4 text-center hover:bg-gray-800 transition-colors duration-200">
+            <h2 class="text-xl font-display text-primary">
+              {state}
+            </h2>
+          </a>
+        ))}
+      </div>
+    </main>
+    
+    <FloatingNavigation />
+  </body>
+</html>
